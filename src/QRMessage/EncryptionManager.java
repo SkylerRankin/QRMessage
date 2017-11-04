@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 
 public class EncryptionManager {
 	
-	private int[][] readImage(String path) {
+	private static int[][] readImage(String path) {
 		File f = new File(path);
 		BufferedImage img = null;
 		try {
@@ -28,17 +28,19 @@ public class EncryptionManager {
 		return pixels;
 	}
 	
-	public String getText(String path) {
+	public static Event getText(String path) {
+		if (!new File(path).exists()) return new Event("File Not Found", Color.RED);
 		int[][] pixels = readImage(path);
 		String binary = collapse(pixels);
-		System.out.println(binary.length() + "-"+binary);
 		StringBuilder s = new StringBuilder();
 		int i=0;
 		while (i<binary.length()-6) {
 			s.append(ascii(binary.substring(i, i+7)));
 			i+=7;
 		}
-		return s.toString();
+		Event e = new Event("File Successfully Read", Color.GREEN);
+		e.setData(s.toString());
+		return e;
 	}
 	
 	private int[] trim(int[] a, int m) {
@@ -51,7 +53,7 @@ public class EncryptionManager {
 		return b;
 	}
 	
-	private String collapse(int[][] a) {
+	private static String collapse(int[][] a) {
 		int[] b = new int[a.length*a[0].length];
 		for (int i=0; i<a.length; ++i)
 			for (int j=0; j<a[0].length; ++j)
@@ -86,7 +88,7 @@ public class EncryptionManager {
 		return binary;
 	}
 	
-	public String ascii(String s) {
+	public static String ascii(String s) {
 		return Character.toString((char) Integer.parseInt(s, 2));
 	}
 	

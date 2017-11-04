@@ -18,7 +18,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -26,12 +25,13 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-@SuppressWarnings("serial")
 public class View extends Application {
 	
 	private Scene get_main_scene(Stage stage) {
 		
 		TabPane tp = new TabPane();
+		
+		//----------------Tab for Encrypting and Generating Image-----------------------------
 		
 		Tab encrypt = new Tab("Encrypt");
 		encrypt.setClosable(false);
@@ -41,9 +41,9 @@ public class View extends Application {
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
 		
-		Text login_title = new Text("Message");
-		login_title.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-		grid.add(login_title, 0, 0, 2, 1);
+		Text message_title = new Text("Message");
+		message_title.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		grid.add(message_title, 0, 0, 2, 1);
 		
 		TextArea area = new TextArea();
 		area.setWrapText(true);
@@ -96,8 +96,65 @@ public class View extends Application {
 		
 		encrypt.setContent(grid);
 		
+		//-----------------------Tab for Decrypting Images and creating texts-------------------------
+		
 		Tab decrypt = new Tab("Decrypt");
 		decrypt.setClosable(false);
+		GridPane grid2 = new GridPane();
+		grid2.setAlignment(Pos.CENTER);
+		grid2.setHgap(10);
+		grid2.setVgap(10);
+		grid2.setPadding(new Insets(25, 25, 25, 25));
+		
+		Text decrypt_title = new Text("Decyrpt QR Message");
+		decrypt_title.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		grid2.add(decrypt_title, 0, 0, 2, 1);
+		
+		TextArea result = new TextArea();
+		result.setWrapText(true);
+		result.setEditable(false);
+		grid2.add(result, 0, 1, 4, 3);
+		
+		grid2.add(new Text("Location"), 0, 5);
+		TextField location_input = new TextField();
+		grid2.add(location_input, 1, 5, 2, 1);
+		
+		Button loc_browse = new Button("Browse");
+		loc_browse.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent arg0) {
+				FileChooser dc = new FileChooser();
+				dc.setTitle("Select Image");
+				File f = dc.showOpenDialog(stage);
+				if (f != null) {
+					location_input.setText(f.toString());
+				}
+			}
+			
+		});
+		grid2.add(loc_browse, 3, 5);
+		
+		Text debug2 = new Text();
+		grid2.add(debug2, 0, 6, 1, 1);
+		
+		HBox hb2 = new HBox(200);
+		hb2.setAlignment(Pos.BOTTOM_RIGHT);
+		Button decrypt_btn = new Button("Decrypt");
+		decrypt_btn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent arg0) {
+				Event s = EncryptionManager.getText(location_input.getText());
+				debug2.setFill(s.color);
+				debug2.setText(s.message);
+				result.setText(s.getData());
+			}
+			
+		});
+		hb2.getChildren().add(decrypt_btn);
+		grid2.add(hb2, 0, 6, 6, 1);
+		
+		decrypt.setContent(grid2);
 		
 		tp.getTabs().addAll(encrypt, decrypt);
 		
@@ -159,6 +216,4 @@ public class View extends Application {
 		launch(args);
 	}
 	
-	
-
 }
